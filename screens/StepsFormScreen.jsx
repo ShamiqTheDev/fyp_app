@@ -1,32 +1,17 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Button, TextInput, Text } from 'react-native-paper';
-import { RootStackParamList } from '../App';
+import { View, StyleSheet, Text } from 'react-native';
+import { Button, TextInput } from 'react-native-paper';
 
-type StepsFormScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StepsForm'>;
-
-interface Props {
-  navigation: StepsFormScreenNavigationProp;
-}
-
-interface StepFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
-
-const StepsFormScreen = ({ navigation }: Props): JSX.Element => {
-  const [formData, setFormData] = useState<StepFormData>({
+const StepsFormScreen = ({ navigation }) => {
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
   });
 
-  const handleInputChange = (name: keyof StepFormData, value: string) => {
-    setFormData((prevFormData) => ({
+  const handleInputChange = (name, value) => {
+    setFormData(prevFormData => ({
       ...prevFormData,
       [name]: value,
     }));
@@ -43,25 +28,25 @@ const StepsFormScreen = ({ navigation }: Props): JSX.Element => {
       <TextInput
         label="First Name"
         value={formData.firstName}
-        onChangeText={(text) => handleInputChange('firstName', text)}
+        onChangeText={text => handleInputChange('firstName', text)}
         style={styles.input}
       />
       <TextInput
         label="Last Name"
         value={formData.lastName}
-        onChangeText={(text) => handleInputChange('lastName', text)}
+        onChangeText={text => handleInputChange('lastName', text)}
         style={styles.input}
       />
       <TextInput
         label="Email"
         value={formData.email}
-        onChangeText={(text) => handleInputChange('email', text)}
+        onChangeText={text => handleInputChange('email', text)}
         style={styles.input}
       />
       <TextInput
         label="Phone"
         value={formData.phone}
-        onChangeText={(text) => handleInputChange('phone', text)}
+        onChangeText={text => handleInputChange('phone', text)}
         style={styles.input}
       />
       <Button mode="contained" onPress={handleSubmit} style={styles.button}>
