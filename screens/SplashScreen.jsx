@@ -1,14 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 
-type SplashScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Splash'>;
-
-interface Props {
-  navigation: SplashScreenNavigationProp;
-}
-
-const SplashScreen = ({ navigation }: Props) => {
+const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
       navigation.replace('Login');
