@@ -1,7 +1,7 @@
 import React from 'react';
-import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import SplashScreen from './screens/SplashScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -17,7 +17,7 @@ const theme = {
   },
 };
 
-const App = (): JSX.Element => {
+const App = () => {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
