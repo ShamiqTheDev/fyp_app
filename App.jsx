@@ -10,11 +10,16 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import LoginScreen from './screens/LoginScreen';
-import LogoutScreen from './screens/LogoutScreen';
-import RegistrationScreen from './screens/RegistrationScreen';
-import DashboardScreen from './screens/DashboardScreen';
-import SplashScreen from './screens/SplashScreen';
+import {
+  LoginScreen,
+  LogoutScreen,
+  RegistrationScreen,
+  DashboardScreen,
+  SplashScreen,
+  VehicleRegistrationScreen,
+  AllVehiclesScreen,
+  PartsRegistrationScreen,
+} from './screens';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -28,28 +33,9 @@ const theme = {
 };
 
 const App = () => {
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
-
-  // useEffect(() => {
-  //   // const checkAuthentication = async () => {
-  //   //   // const token = await AsyncStorage.getItem('token');
-  //   //   // setIsAuthenticated(token !== null);
-  //   //   // console.log('isAuthenticated', isAuthenticated);
-  //   //   // setIsLoading(false);
-  //   // };
-  //   // checkAuthentication();
-  // }, []);
-
-  // const handleLogin = () => {
-  //   // console.log('setIsAuthenticated', 'setIsAuthenticated(true)');
-  //   setIsAuthenticated(true);
-  // };
-
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('user');
-    // setIsAuthenticated(false);
     console.log('session logged out');
   };
 
@@ -65,7 +51,6 @@ const App = () => {
         component={LoginScreen}
         options={{
           headerShown: false,
-          // screenOptions: {login: handleLogin},
         }}
       />
       <Stack.Screen
@@ -75,11 +60,6 @@ const App = () => {
       />
     </Stack.Navigator>
   );
-
-  // if (isLoading) {
-  //   // Render a loading screen while checking authentication
-  //   return null;
-  // }
 
   const AuthenticatedRoutes = () => (
     <Drawer.Navigator>
@@ -92,7 +72,21 @@ const App = () => {
           headerRight: () => <Button onPress={handleLogout} title="Logout" />,
         }}
       />
-      {/* Add your other authenticated screens here */}
+      <Drawer.Screen
+        name="VehicleRegistration"
+        component={VehicleRegistrationScreen}
+        options={{headerShown: true, title: 'Vehicle Registration'}}
+      />
+      {/* <Drawer.Screen
+        name="AllVehicles"
+        component={AllVehiclesScreen}
+        options={{headerShown: true, title: 'Registered Vehicles'}}
+      /> */}
+      <Drawer.Screen
+        name="PartsRegistration"
+        component={PartsRegistrationScreen}
+        options={{headerShown: true, title: 'Parts Registration'}}
+      />
       <Drawer.Screen
         name="Logout"
         component={LogoutScreen}
@@ -104,7 +98,6 @@ const App = () => {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
-        {/* {isAuthenticated ? <AuthenticatedRoutes /> : <UnauthenticatedRoutes />} */}
         <Stack.Navigator>
           <Stack.Screen
             name="UnauthenticatedRoutes"
