@@ -1,5 +1,5 @@
-/* eslint-disable no-catch-shadow */
 /* eslint-disable no-shadow */
+/* eslint-disable no-catch-shadow */
 import {loginUser} from '../services/authService';
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const navigation = useNavigation();
 
@@ -42,13 +43,13 @@ const LoginScreen = () => {
       <TextInput
         label="Email"
         value={email}
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={text => setEmail(text)}
         style={styles.input}
       />
       <TextInput
         label="Password"
         value={password}
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={text => setPassword(text)}
         secureTextEntry={true}
         style={styles.input}
       />
@@ -58,6 +59,13 @@ const LoginScreen = () => {
         style={styles.button}>
         Login
       </Button>
+      <Text style={styles.signupText}>
+        Don't have an account?{' '}
+        <Text style={styles.signupLink} onPress={handleSignup}>
+          Signup
+        </Text>
+      </Text>
+      {error !== '' && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
@@ -78,6 +86,19 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+  },
+  signupText: {
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  signupLink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 16,
+    textAlign: 'center',
   },
 });
 
