@@ -7,17 +7,18 @@ export const createPartsRegistration = async (name, description) => {
     const userData = await AsyncStorage.getItem('user');
     const userId = JSON.parse(userData).id;
 
-    const response = await api.post(
-      '/parts/create',
-      `user_id=${userId}&name=${encodeURIComponent(
-        name,
-      )}&description=${encodeURIComponent(description)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const params = {
+      user_id: userId,
+      name: name,
+      description: description,
+    };
+
+    const response = await api.post('/parts/create', params, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
+
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -32,6 +33,7 @@ export const fetchPartsRegistrations = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+
     return response.data;
   } catch (error) {
     throw error.response.data;
