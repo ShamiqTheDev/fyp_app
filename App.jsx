@@ -19,6 +19,7 @@ import {
   VehicleRegistrationScreen,
   AllVehiclesScreen,
   PartsRegistrationScreen,
+  ExpiriesEntryScreen,
 } from './screens';
 
 const Drawer = createDrawerNavigator();
@@ -86,6 +87,11 @@ const App = () => {
         name="PartsRegistration"
         component={PartsRegistrationScreen}
         options={{headerShown: true, title: 'Parts Registration'}}
+      />
+      <Drawer.Screen
+        name="ExpiriesEntry"
+        component={ExpiriesEntryScreen}
+        options={{headerShown: true, title: 'Add Expiry'}}
       />
       <Drawer.Screen
         name="Logout"

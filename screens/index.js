@@ -6,3 +6,4 @@ export {default as SplashScreen} from './SplashScreen';
 export {default as VehicleRegistrationScreen} from './VehicleRegistrationScreen';
 export {default as AllVehiclesScreen} from './AllVehiclesScreen';
 export {default as PartsRegistrationScreen} from './PartsRegistrationScreen';
+export {default as ExpiriesEntryScreen} from './ExpiriesEntryScreen';
