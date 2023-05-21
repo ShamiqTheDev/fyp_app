@@ -1,11 +1,19 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Image} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SplashScreen = ({ navigation }) => {
+const SplashScreen = ({navigation}) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.replace('Login');
-    }, 3000);
+      const checkAuthentication = async () => {
+        const token = await AsyncStorage.getItem('token');
+        if (token !== null) {
+          navigation.replace('AuthenticatedRoutes');
+        }
+        navigation.replace('Login');
+      };
+      checkAuthentication();
+    }, 500);
   }, [navigation]);
 
   return (

@@ -1,26 +1,31 @@
-/* eslint-disable no-catch-shadow */
-import {loginUser} from '../services/authService';
 /* eslint-disable no-shadow */
+/* eslint-disable no-catch-shadow */
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
-import {useNavigation} from '@react-navigation/native';
+
+import {registerUser} from '../services/authService';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-const LoginScreen = () => {
+const RegistrationScreen = ({navigation}) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const navigation = useNavigation();
-
-  const handleLoginButtonPress = async () => {
+  const handleRegistration = async () => {
     try {
-      const response = await loginUser(email, password);
+      const userData = {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password,
+      };
+
+      const response = await registerUser(userData);
       if (response.status === true) {
-        console.log('Logged In', response);
         if (response.status === true) {
           await AsyncStorage.setItem('token', response.token);
           await AsyncStorage.setItem('user', JSON.stringify(response.data));
@@ -30,18 +35,30 @@ const LoginScreen = () => {
         setError(response.message);
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      // Handle the error or validation errors here
       console.log(error);
     }
   };
 
-  const handleSignup = () => {
-    navigation.replace('Registration');
+  const handleLogin = () => {
+    navigation.replace('Login');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>User Registration</Text>
+      <TextInput
+        label="First Name"
+        value={firstName}
+        onChangeText={text => setFirstName(text)}
+        style={styles.input}
+      />
+      <TextInput
+        label="Last Name"
+        value={lastName}
+        onChangeText={text => setLastName(text)}
+        style={styles.input}
+      />
       <TextInput
         label="Email"
         value={email}
@@ -55,13 +72,16 @@ const LoginScreen = () => {
         secureTextEntry={true}
         style={styles.input}
       />
-      <Button mode="contained" onPress={handleLoginButtonPress} style={styles.button}>
-        Login
+      <Button
+        mode="contained"
+        onPress={handleRegistration}
+        style={styles.button}>
+        Register
       </Button>
-      <Text style={styles.signupText}>
-        Don't have an account?{' '}
-        <Text style={styles.signupLink} onPress={handleSignup}>
-          Signup
+      <Text style={styles.loginText}>
+        Already have an account?{' '}
+        <Text style={styles.loginLink} onPress={handleLogin}>
+          Login Now
         </Text>
       </Text>
       {error !== '' && <Text style={styles.errorText}>{error}</Text>}
@@ -86,11 +106,11 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 16,
   },
-  signupText: {
+  loginText: {
     marginTop: 16,
     textAlign: 'center',
   },
-  signupLink: {
+  loginLink: {
     color: 'blue',
     textDecorationLine: 'underline',
   },
@@ -101,4 +121,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default RegistrationScreen;
