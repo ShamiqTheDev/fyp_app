@@ -34,6 +34,8 @@ const PartsRegistrationScreen = () => {
         style={styles.input}
       />
       <TextInput
+        multiline={true}
+        numberOfLines={4}
         label="Description"
         value={description}
         onChangeText={text => setDescription(text)}
