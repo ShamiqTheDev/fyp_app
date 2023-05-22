@@ -61,3 +61,7 @@ yarn-error.log
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
+screens/_DashboardScreen.jsx
+screens/_LoginScreen.jsx
+screens/_LogoutScreen.jsx
+screens/_RegistrationScreen.jsx
