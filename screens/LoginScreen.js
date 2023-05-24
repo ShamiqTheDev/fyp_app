@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-catch-shadow */
-import {loginUser} from '../services/authService';
+import {loginUser} from '../services/authServiceFA';
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
@@ -18,6 +18,7 @@ const LoginScreen = () => {
   const handleLoginButtonPress = async () => {
     try {
       const response = await loginUser(email, password);
+      console.log('response', response);
       if (response.status === true) {
         await AsyncStorage.setItem('token', response.token);
         await AsyncStorage.setItem('user', JSON.stringify(response.data));

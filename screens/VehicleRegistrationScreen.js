@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 
-import {createVehicleRegistration} from '../services/vehicleRegistrationService';
+import {createVehicleRegistration} from '../services/vehicleRegistrationServiceFA';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VehicleRegistrationScreen = () => {

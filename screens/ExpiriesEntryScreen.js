@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 
-import {createExpiry} from '../services/expiriesService';
+import {createExpiry} from '../services/expiriesServiceFA';
 
 const ExpiriesEntryScreen = () => {
   const [vehicleId, setVehicleId] = useState('');

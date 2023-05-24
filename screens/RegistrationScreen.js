@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 
-import {registerUser} from '../services/authService';
+import {registerUser} from '../services/authServiceFA';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
