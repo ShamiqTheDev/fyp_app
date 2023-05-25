@@ -1,40 +1,41 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {View, Text, PermissionsAndroid} from 'react-native';
+import MapView from 'react-native-maps';
+
+// const requestCameraPermission = async () => {
+//   try {
+//     const granted = await PermissionsAndroid.request(
+//       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+//       {
+//         title: 'Cool Photo App Camera Permission',
+//         message: 'GEOV Tracker needs access to your location',
+//         buttonNeutral: 'Ask Me Later',
+//         buttonNegative: 'Cancel',
+//         buttonPositive: 'OK',
+//       },
+//     );
+//     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+//       console.log('You can use the location');
+//     } else {
+//       console.log('Location permission denied');
+//     }
+//   } catch (err) {
+//     console.warn(err);
+//   }
+// };
 
 const DashboardScreen = () => {
-  const [statistics, setStatistics] = useState(null);
-
-  const [token, setToken] = useState('');
-
-  useEffect(() => {
-    // For testing purposes, mock data
-    const mockStatistics = {
-      users: 100,
-      orders: 50,
-      revenue: 1000,
-      token: token,
-    };
-    setStatistics(mockStatistics);
-
-    const setTokenFunct = async () => {
-      setToken(await AsyncStorage.getItem('token'));
-    };
-    setTokenFunct();
-    console.log('async TOKEN', token);
-  }, []);
-
   return (
     <View>
-      <Text>Welcome to the Dashboard!</Text>
-      {statistics && (
-        <View>
-          <Text>Token: {statistics.token}</Text>
-          <Text>Users: {statistics.users}</Text>
-          <Text>Orders: {statistics.orders}</Text>
-          <Text>Revenue: {statistics.revenue}</Text>
-        </View>
-      )}
+      <MapView
+        style={{width: '100%', height: '100%'}}
+        initialRegion={{
+          latitude: 30.3753,
+          longitude: 69.3451,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+      />
     </View>
   );
 };
