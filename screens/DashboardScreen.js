@@ -1,43 +1,108 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, PermissionsAndroid} from 'react-native';
-import MapView from 'react-native-maps';
-
-// const requestCameraPermission = async () => {
-//   try {
-//     const granted = await PermissionsAndroid.request(
-//       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-//       {
-//         title: 'Cool Photo App Camera Permission',
-//         message: 'GEOV Tracker needs access to your location',
-//         buttonNeutral: 'Ask Me Later',
-//         buttonNegative: 'Cancel',
-//         buttonPositive: 'OK',
-//       },
-//     );
-//     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-//       console.log('You can use the location');
-//     } else {
-//       console.log('Location permission denied');
-//     }
-//   } catch (err) {
-//     console.warn(err);
-//   }
-// };
+import {View, Text, StyleSheet, PermissionsAndroid} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
+import Geolocation from 'react-native-geolocation-service';
 
 const DashboardScreen = () => {
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [totalKilometers, setTotalKilometers] = useState(0);
+
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      try {
+        if (Platform.OS === 'android') {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            startLocationTracking();
+          } else {
+            console.log('Location permission denied');
+          }
+        } else if (Platform.OS === 'ios') {
+          Geolocation.requestAuthorization('whenInUse');
+          startLocationTracking();
+        }
+      } catch (error) {
+        console.log('Error requesting location permission:', error);
+      }
+    };
+
+    const startLocationTracking = () => {
+      const watchId = Geolocation.watchPosition(
+        position => {
+          const {latitude, longitude} = position.coords;
+          setCurrentLocation({latitude, longitude});
+        },
+        error => console.log('Error:', error),
+        {enableHighAccuracy: true, distanceFilter: 10},
+      );
+
+      return () => {
+        Geolocation.clearWatch(watchId);
+      };
+    };
+
+    requestLocationPermission();
+  }, []);
+
+  useEffect(() => {
+    if (currentLocation) {
+      const kilometersPerUpdate = 60 / 3600;
+      setTotalKilometers(
+        prevKilometers => prevKilometers + kilometersPerUpdate,
+      );
+    }
+  }, [currentLocation]);
+
   return (
-    <View>
+    <View style={styles.container}>
       <MapView
-        style={{width: '100%', height: '100%'}}
-        initialRegion={{
-          latitude: 30.3753,
-          longitude: 69.3451,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-      />
+        style={styles.map}
+        region={
+          currentLocation
+            ? {
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }
+            : null
+        }>
+        {currentLocation && (
+          <Marker
+            coordinate={{
+              latitude: currentLocation.latitude,
+              longitude: currentLocation.longitude,
+            }}
+          />
+        )}
+      </MapView>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>
+          Total Kilometers: {totalKilometers.toFixed(2)}
+        </Text>
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    flex: 1,
+  },
+  infoContainer: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+  },
+  infoText: {
+    color: 'white',
+    fontSize: 16,
+  },
+});
 
 export default DashboardScreen;
