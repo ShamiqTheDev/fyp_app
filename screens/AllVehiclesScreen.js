@@ -12,27 +12,6 @@ import {useNavigation} from '@react-navigation/native';
 
 import {fetchVehicleRegistrations} from './services/vehicleRegistrationService';
 
-// Move the inline styles to a stylesheet
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-});
-
 const AllVehiclesScreen = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
@@ -94,5 +73,26 @@ const AllVehiclesScreen = () => {
     </View>
   );
 };
+
+// Move the inline styles to a stylesheet
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+});
 
 export default AllVehiclesScreen;

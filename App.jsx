@@ -10,6 +10,10 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// import {enableLatestRenderer} from 'react-native-maps';
+
+// enableLatestRenderer();
+
 import {
   LoginScreen,
   LogoutScreen,
