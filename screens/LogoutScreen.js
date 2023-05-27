@@ -6,8 +6,9 @@ import {Text} from 'react-native-paper';
 const LogoutScreen = ({navigation}) => {
   useEffect(() => {
     const logout = async () => {
-      await AsyncStorage.removeItem('token');
-      await AsyncStorage.removeItem('user');
+      // await AsyncStorage.removeItem('token');
+      // await AsyncStorage.removeItem('user');
+      await AsyncStorage.clear();
 
       navigation.replace('UnauthenticatedRoutes');
     };
