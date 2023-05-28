@@ -1,5 +1,5 @@
-// const baseURL = 'http://10.0.2.2:8888/fyp_backend/api';
-const baseURL = 'http://ec2-13-53-106-46.eu-north-1.compute.amazonaws.com/api';
+const baseURL = 'http://10.0.2.2:8888/fyp_backend/api';
+// const baseURL = 'http://ec2-13-53-106-46.eu-north-1.compute.amazonaws.com/api';
 
 const headers = {
   Accept: 'application/json',

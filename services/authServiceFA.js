@@ -28,7 +28,6 @@ export const loginUser = async (email, password) => {
         'Content-Type': 'application/json', // Set the Content-Type header to JSON
       },
     });
-    console.log(response);
     return response;
   } catch (error) {
     console.log(error);

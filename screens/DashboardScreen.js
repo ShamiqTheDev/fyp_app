@@ -26,6 +26,19 @@ const DashboardScreen = () => {
   }, []);
 
   useEffect(() => {
+    const loadTotalKilometers = async () => {
+      try {
+        const value = await AsyncStorage.getItem('totalKilometers');
+        if (value !== null) {
+          setTotalKilometers(parseFloat(value));
+        }
+      } catch (error) {
+        console.log('Error loading total kilometers from AsyncStorage:', error);
+      }
+    };
+
+    loadTotalKilometers();
+
     if (currentLocation && previousLocation) {
       const distance = calculateDistance(
         previousLocation.latitude,
@@ -34,46 +47,40 @@ const DashboardScreen = () => {
         currentLocation.longitude,
       );
       const kilometers = distance / 1000; // Convert distance from meters to kilometers
+
       setTotalKilometers(prevKilometers => {
         const newKilometers = prevKilometers + kilometers;
+
         AsyncStorage.setItem('totalKilometers', newKilometers.toString());
-        return newKilometers;
-      });
 
-      const newKilometers = totalKilometers + kilometers; // Calculate the updated kilometers
-
-      if (newKilometers >= 5) {
-        const syncLocation = async () => {
-          const response = await updateGeolocation(
+        if (newKilometers >= 5 && Math.floor(newKilometers) % 5 === 0) {
+          updateGeolocation(
             newKilometers,
             currentLocation.latitude,
             currentLocation.longitude,
-          );
-          // setTotalKilometers(0);
-          if (response.status) {
-            console.log('Success: Syncing location data');
-          } else {
-            console.log('Failed: Syncing location data');
-          }
-        };
-        syncLocation();
-      }
+          )
+            .then(response => {
+              if (response.status) {
+                console.log('Success: Syncing location data');
+              } else {
+                console.log('Failed: Syncing location data');
+              }
+            })
+            .catch(error => {
+              console.log('Error: Syncing location data');
+            });
+
+          console.log('Updating data in the database...');
+        }
+
+        return newKilometers;
+      });
     }
 
     if (currentLocation) {
       setPreviousLocation(currentLocation);
     }
-  }, [currentLocation, previousLocation, totalKilometers, calculateDistance]);
-
-  const updateGeolocation = (kilometers, latitude, longitude) => {
-    // Replace this comment with your specific implementation to update the data in your chosen database system
-    // This could involve making an API request to your backend server or using a database library specific to your chosen database system
-    // Update the relevant data fields in the database based on the accumulated kilometers and the current latitude and longitude
-    console.log('Updating data in the database...');
-    console.log('Kilometers:', kilometers);
-    console.log('Latitude:', latitude);
-    console.log('Longitude:', longitude);
-  };
+  }, [currentLocation, previousLocation, calculateDistance]);
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Radius of the Earth in kilometers
