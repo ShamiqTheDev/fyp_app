@@ -6,7 +6,7 @@ export const createExpiry = async (
   part_id,
   // type,
   expiry,
-  notify_before,
+  notify_at,
   note,
 ) => {
   try {
@@ -17,7 +17,7 @@ export const createExpiry = async (
       part_id: part_id,
       // type: type,
       expiry: expiry,
-      notify_before: notify_before,
+      notify_at: notify_at,
       note: note,
     };
 

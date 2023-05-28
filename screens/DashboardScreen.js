@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -60,14 +60,13 @@ const DashboardScreen = () => {
             currentLocation.longitude,
           )
             .then(response => {
-              if (response.status) {
+              if (response && response.status) {
                 console.log('Success: Syncing location data');
-              } else {
-                console.log('Failed: Syncing location data');
               }
             })
             .catch(error => {
               console.log('Error: Syncing location data');
+              console.log(error);
             });
 
           console.log('Updating data in the database...');
@@ -82,7 +81,7 @@ const DashboardScreen = () => {
     }
   }, [currentLocation, previousLocation, calculateDistance]);
 
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const calculateDistance = useCallback((lat1, lon1, lat2, lon2) => {
     const R = 6371; // Radius of the Earth in kilometers
     const dLat = deg2rad(lat2 - lat1);
     const dLon = deg2rad(lon2 - lon1);
@@ -95,7 +94,7 @@ const DashboardScreen = () => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c * 1000; // Distance in meters
     return distance;
-  };
+  }, []);
 
   const deg2rad = deg => {
     return deg * (Math.PI / 180);
