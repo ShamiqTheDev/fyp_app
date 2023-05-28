@@ -18,7 +18,6 @@ const LoginScreen = () => {
   const handleLoginButtonPress = async () => {
     try {
       const response = await loginUser(email, password);
-      console.log('response', response);
       if (response.status === true) {
         await AsyncStorage.setItem('token', response.token);
         await AsyncStorage.setItem('user', JSON.stringify(response.data));
