@@ -67,3 +67,4 @@ screens/_LogoutScreen.jsx
 screens/_RegistrationScreen.jsx
 android/gradle.properties
 .vscode/settings.json
+android/gradle.properties
