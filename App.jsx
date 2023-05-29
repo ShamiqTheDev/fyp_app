@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useState, useEffect} from 'react';
+
 import {
   DefaultTheme,
   Provider as PaperProvider,
@@ -9,10 +10,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// import {enableLatestRenderer} from 'react-native-maps';
-
-// enableLatestRenderer();
 
 import {
   LoginScreen,
@@ -25,6 +22,8 @@ import {
   PartsRegistrationScreen,
   ExpiriesEntryScreen,
 } from './screens';
+// import {enableLatestRenderer} from 'react-native-maps';
+// enableLatestRenderer();
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
