@@ -5,6 +5,8 @@ import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
+import messaging from '@react-native-firebase/messaging';
+
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -19,8 +21,13 @@ const LoginScreen = () => {
     try {
       const response = await loginUser(email, password);
       if (response.status === true) {
+        const fcm_token = await messaging().getToken();
+        console.log('FCM Token:', fcm_token);
+
+        await AsyncStorage.setItem('fcm_token', fcm_token);
         await AsyncStorage.setItem('token', response.token);
         await AsyncStorage.setItem('user', JSON.stringify(response.data));
+
         navigation.replace('AuthenticatedRoutes');
 
         console.log('Logged In', response);

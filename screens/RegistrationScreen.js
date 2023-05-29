@@ -3,10 +3,9 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
-
 import {registerUser} from '../services/authServiceFA';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
 
 const RegistrationScreen = ({navigation}) => {
   const [firstName, setFirstName] = useState('');
@@ -17,16 +16,20 @@ const RegistrationScreen = ({navigation}) => {
 
   const handleRegistration = async () => {
     try {
+      const fcm_token = await messaging().getToken();
+      console.log('FCM Token:', fcm_token);
       const userData = {
         first_name: firstName,
         last_name: lastName,
         email,
         password,
+        fcm_token,
       };
 
       const response = await registerUser(userData);
       if (response.status === true) {
         if (response.status === true) {
+          await AsyncStorage.setItem('fcm_token', fcm_token);
           await AsyncStorage.setItem('token', response.token);
           await AsyncStorage.setItem('user', JSON.stringify(response.data));
         }

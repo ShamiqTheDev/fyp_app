@@ -1,14 +1,57 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Alert} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {updateGeolocation} from '../services/geolocationService';
 
+import messaging from '@react-native-firebase/messaging';
+
 const DashboardScreen = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [previousLocation, setPreviousLocation] = useState(null);
   const [totalKilometers, setTotalKilometers] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    // Request permission for notifications
+    messaging()
+      .requestPermission()
+      .then(() => {
+        // Get the device token
+        messaging()
+          .getToken()
+          .then(token => {
+            console.log('FCM Token:', token);
+          });
+      })
+      .catch(error => {
+        console.log('Permission rejected:', error);
+      });
+
+    // Handle foreground/background messages
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('Foreground/background message:', remoteMessage);
+    });
+
+    const setBackgroundMessageHandler = async () => {
+      await messaging().setBackgroundMessageHandler(async remoteMessage => {
+        console.log('Background message:', remoteMessage);
+        // Handle the background message here
+      });
+    };
+
+    setBackgroundMessageHandler();
+
+    return unsubscribe; // Clean up the subscription when component unmounts
+  }, []);
 
   useEffect(() => {
     const watchId = Geolocation.watchPosition(
