@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 
 import {
   DefaultTheme,
   Provider as PaperProvider,
   Button,
+  MD2Colors,
 } from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -18,8 +19,10 @@ import {
   DashboardScreen,
   SplashScreen,
   VehicleRegistrationScreen,
-  AllVehiclesScreen,
+  VehicleListScreen,
+  EditVehicleRegistrationScreen,
   PartsRegistrationScreen,
+  PartsListScreen,
   ExpiriesEntryScreen,
 } from './screens';
 // import {enableLatestRenderer} from 'react-native-maps';
@@ -32,8 +35,27 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#2196f3',
+    primary: '#010444',
+    accent: '#FF4081',
+    background: '#F9F9F9',
+    text: '#333333',
+    placeholder: '#999999',
   },
+  // fonts: {
+  //   regular: {
+  //     fontFamily: 'Roboto-Regular',
+  //     fontWeight: 'normal',
+  //   },
+  //   medium: {
+  //     fontFamily: 'Roboto-Medium',
+  //     fontWeight: 'normal',
+  //   },
+  //   bold: {
+  //     fontFamily: 'Roboto-Bold',
+  //     fontWeight: 'normal',
+  //   },
+  // },
+  roundness: 1,
 };
 
 const App = () => {
@@ -66,7 +88,14 @@ const App = () => {
   );
 
   const AuthenticatedRoutes = () => (
-    <Drawer.Navigator>
+    <Drawer.Navigator
+      initialRouteName="MyVehicles"
+      screenOptions={{
+        drawerActiveTintColor: '#7F1416',
+        drawerInactiveTintColor: '#000000',
+        drawerLabelStyle: {fontSize: 16, fontWeight: 'bold'},
+        drawerStyle: {backgroundColor: '#F5F5F5'},
+      }}>
       <Drawer.Screen
         name="Dashboard"
         component={DashboardScreen}
@@ -77,24 +106,19 @@ const App = () => {
         }}
       />
       <Drawer.Screen
+        name="MyVehicles"
+        component={VehicleListScreen}
+        options={{headerShown: true, title: 'My Vehicles'}}
+      />
+      <Drawer.Screen
         name="VehicleRegistration"
         component={VehicleRegistrationScreen}
         options={{headerShown: true, title: 'Vehicle Registration'}}
       />
-      {/* <Drawer.Screen
-        name="AllVehicles"
-        component={AllVehiclesScreen}
-        options={{headerShown: true, title: 'Registered Vehicles'}}
-      /> */}
       <Drawer.Screen
         name="PartsRegistration"
         component={PartsRegistrationScreen}
         options={{headerShown: true, title: 'Parts Registration'}}
-      />
-      <Drawer.Screen
-        name="ExpiriesEntry"
-        component={ExpiriesEntryScreen}
-        options={{headerShown: true, title: 'Add Expiry'}}
       />
       <Drawer.Screen
         name="Logout"
@@ -102,6 +126,26 @@ const App = () => {
         options={{headerShown: false}}
       />
     </Drawer.Navigator>
+  );
+
+  const InternalRoutes = () => (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="EditVehicle"
+        component={EditVehicleRegistrationScreen}
+        options={{headerShown: true, title: 'Edit Vehicle'}}
+      />
+      <Stack.Screen
+        name="AllPartsByVehicle"
+        component={PartsListScreen}
+        options={{headerShown: true, title: 'All Parts'}}
+      />
+      <Stack.Screen
+        name="AddExpiry"
+        component={ExpiriesEntryScreen}
+        options={{headerShown: true, title: 'Add Expiry'}}
+      />
+    </Stack.Navigator>
   );
 
   return (
@@ -116,6 +160,11 @@ const App = () => {
           <Stack.Screen
             name="AuthenticatedRoutes"
             component={AuthenticatedRoutes}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="InternalRoutes"
+            component={InternalRoutes}
             options={{headerShown: false}}
           />
         </Stack.Navigator>

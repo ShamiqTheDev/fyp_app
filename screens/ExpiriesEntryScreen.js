@@ -6,10 +6,10 @@ import {Button, TextInput} from 'react-native-paper';
 
 import {createExpiry} from '../services/expiriesServiceFA';
 
-const ExpiriesEntryScreen = () => {
-  const [vehicleId, setVehicleId] = useState('');
-  const [partId, setPartId] = useState('');
-  //   const [type, setType] = useState('');
+const ExpiriesEntryScreen = ({navigation, route}) => {
+  console.log(route.params);
+  const {vehicle} = route.params;
+  const {part} = route.params;
   const [expiry, setExpiry] = useState('');
   const [notifyBefore, setNotifyBefore] = useState('');
   const [note, setNote] = useState('');
@@ -18,14 +18,20 @@ const ExpiriesEntryScreen = () => {
   const handleRegistration = async () => {
     try {
       const response = await createExpiry(
-        vehicleId,
-        partId,
-        // type,
+        vehicle.id,
+        part.id,
         expiry,
         notifyBefore,
         note,
       );
+      if (response.status === true) {
+        setExpiry('');
+        setNotifyBefore('');
+        setNote('');
+        setError('');
 
+        navigation.goBack();
+      }
       // Handle the response here
       console.log(response);
     } catch (error) {
@@ -36,38 +42,25 @@ const ExpiriesEntryScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Expiries Entry</Text>
+      <Text style={styles.title}>
+        Expiriy Entry [{vehicle.name}-{part.name}]
+      </Text>
       <TextInput
-        label="Vehicle ID"
-        value={vehicleId}
-        onChangeText={text => setVehicleId(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Part ID"
-        value={partId}
-        onChangeText={text => setPartId(text)}
-        style={styles.input}
-      />
-      {/* <TextInput
-        label="Type"
-        value={type}
-        onChangeText={text => setType(text)}
-        style={styles.input}
-      /> */}
-      <TextInput
+        mode="outlined"
         label="Expiry(Kilo Metres)"
         value={expiry}
         onChangeText={text => setExpiry(text)}
         style={styles.input}
       />
       <TextInput
+        mode="outlined"
         label="Alert Before (Kilo Metres)"
         value={notifyBefore}
         onChangeText={text => setNotifyBefore(text)}
         style={styles.input}
       />
       <TextInput
+        mode="outlined"
         multiline={true}
         numberOfLines={4}
         label="Note"

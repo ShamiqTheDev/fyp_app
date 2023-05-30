@@ -1,21 +1,27 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-catch-shadow */
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 
 import {createPartsRegistration} from '../services/partsRegistrationServiceFA';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PartsRegistrationScreen = () => {
+const PartsRegistrationScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [activeVehicle, setActiveVehicle] = useState({});
   const [error, setError] = useState('');
 
-  const handleRegistration = async () => {
+  const handleRegistrationBase = async navigateTo => {
     try {
       const response = await createPartsRegistration(name, description);
-
+      if (response.status === true) {
+        setName('');
+        setDescription('');
+        navigation.navigate(navigateTo);
+        console.log('Navifation to MyVehicleParts');
+      }
       // Handle the response here
       console.log(response);
     } catch (error) {
@@ -24,16 +30,46 @@ const PartsRegistrationScreen = () => {
     }
   };
 
+  const handleRegistration = async vehicle => {
+    navigation.navigate('InternalRoutes', {
+      screen: 'AllPartsByVehicle',
+      params: {vehicle},
+    });
+  };
+
+  const handleMoreRegistration = () => {
+    handleRegistrationBase('PartsRegistration');
+  };
+
+  // const handleExpiries = (vehicle, part) => {
+  //   navigation.navigate('InternalRoutes', {
+  //     screen: 'AddExpiry',
+  //     params: {vehicle, part},
+  //   });
+  //   navigation.navigate('AddExpiry');
+  // };
+  const getActiveVehicle = async () => {
+    const activeVehicle = await AsyncStorage.getItem('active_vehicle');
+
+    setActiveVehicle(JSON.parse(activeVehicle));
+  };
+  useEffect(() => {
+    getActiveVehicle();
+  });
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Parts Registration</Text>
+      <Text style={styles.title}>
+        Add Parts for {activeVehicle.name} ({activeVehicle.number})
+      </Text>
       <TextInput
+        mode="outlined"
         label="Name"
         value={name}
         onChangeText={text => setName(text)}
         style={styles.input}
       />
       <TextInput
+        mode="outlined"
         multiline={true}
         numberOfLines={4}
         label="Description"
@@ -43,10 +79,23 @@ const PartsRegistrationScreen = () => {
       />
       <Button
         mode="contained"
-        onPress={handleRegistration}
+        onPress={handleMoreRegistration}
         style={styles.button}>
-        Register Parts
+        Register and Add more Parts
       </Button>
+      <Button
+        mode="outlined"
+        onPress={() => handleRegistration(activeVehicle)}
+        style={styles.button}>
+        Register Part!
+      </Button>
+      {/* <Button
+        mode="outlined"
+        onPress={handleExpiries}
+        textColor="#7f1416"
+        style={styles.buttonExpiry}>
+        Add Expiries Now?
+      </Button> */}
       {error !== '' && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
@@ -69,6 +118,10 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 16,
   },
+  // buttonExpiry: {
+  //   marginTop: 16,
+  //   borderColor: '#7f1416',
+  // },
   errorText: {
     color: 'red',
     marginTop: 16,

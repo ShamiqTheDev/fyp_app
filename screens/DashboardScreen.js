@@ -3,18 +3,31 @@ import {View, Text, StyleSheet, Alert} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {updateGeolocation} from '../services/geolocationService';
+import {updateGeolocation} from '../services/geolocationServiceFA';
 
 import messaging from '@react-native-firebase/messaging';
 
-const DashboardScreen = () => {
+const DashboardScreen = ({navigation}) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [previousLocation, setPreviousLocation] = useState(null);
   const [totalKilometers, setTotalKilometers] = useState(0);
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      const {data} = remoteMessage;
+      const {screen} = data;
+
+      // Show an alert or perform any other action if needed
+      // Alert.alert('Alert', remoteMessage.notification.title);
+      Alert.alert(
+        remoteMessage.notification.title,
+        remoteMessage.notification.body,
+      );
+
+      // Navigate to the desired screen based on the received payload data
+      if (screen) {
+        navigation.navigate(screen);
+      }
     });
 
     return unsubscribe;
@@ -71,7 +84,7 @@ const DashboardScreen = () => {
   useEffect(() => {
     const loadTotalKilometers = async () => {
       try {
-        const value = await AsyncStorage.getItem('totalKilometers');
+        const value = await AsyncStorage.getItem('total_kilometers');
         if (value !== null) {
           setTotalKilometers(parseFloat(value));
         }
@@ -94,7 +107,7 @@ const DashboardScreen = () => {
       setTotalKilometers(prevKilometers => {
         const newKilometers = prevKilometers + kilometers;
 
-        AsyncStorage.setItem('totalKilometers', newKilometers.toString());
+        AsyncStorage.setItem('total_kilometers', newKilometers.toString());
 
         if (newKilometers >= 5 && Math.floor(newKilometers) % 5 === 0) {
           updateGeolocation(
