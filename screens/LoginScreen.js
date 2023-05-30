@@ -2,13 +2,15 @@
 /* eslint-disable no-catch-shadow */
 import {loginUser} from '../services/authServiceFA';
 import React, {useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Image, ScrollView} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
 
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Import your application logo
+import LogoImage from '../assets/logo_1.png';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -27,6 +29,10 @@ const LoginScreen = () => {
         await AsyncStorage.setItem('fcm_token', fcm_token);
         await AsyncStorage.setItem('token', response.token);
         await AsyncStorage.setItem('user', JSON.stringify(response.data));
+        await AsyncStorage.setItem(
+          'vehicle_registrations',
+          JSON.stringify(response.data.vehicle_registrations),
+        );
 
         navigation.replace('AuthenticatedRoutes');
 
@@ -45,42 +51,64 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        label="Email"
-        value={email}
-        onChangeText={text => setEmail(text)}
-        style={styles.input}
-      />
-      <TextInput
-        label="Password"
-        value={password}
-        onChangeText={text => setPassword(text)}
-        secureTextEntry={true}
-        style={styles.input}
-      />
-      <Button
-        mode="contained"
-        onPress={handleLoginButtonPress}
-        style={styles.button}>
-        Login
-      </Button>
-      <Text style={styles.signupText}>
-        Don't have an account?{' '}
-        <Text style={styles.signupLink} onPress={handleSignup}>
-          Signup
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image source={LogoImage} style={styles.logo} />
+      </View>
+
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Login</Text>
+        <TextInput
+          label="Email"
+          value={email}
+          mode="outlined"
+          onChangeText={text => setEmail(text)}
+          style={styles.input}
+        />
+        <TextInput
+          label="Password"
+          value={password}
+          mode="outlined"
+          onChangeText={text => setPassword(text)}
+          secureTextEntry={true}
+          style={styles.input}
+        />
+        <Button
+          mode="contained"
+          onPress={handleLoginButtonPress}
+          style={styles.button}>
+          Login
+        </Button>
+        <Text style={styles.signupText}>
+          Don't have an account?{' '}
+          <Text style={styles.signupLink} onPress={handleSignup}>
+            Signup
+          </Text>
         </Text>
-      </Text>
-      {error !== '' && <Text style={styles.errorText}>{error}</Text>}
-    </View>
+        {error !== '' && <Text style={styles.errorText}>{error}</Text>}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 16,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 80, // Adjust the margin top value as needed
+  },
+  logo: {
+    width: 260,
+    height: 120,
+    marginTop: 40,
+    marginBottom: 0,
+    alignSelf: 'center',
+  },
+  formContainer: {
+    flex: 1,
     justifyContent: 'center',
   },
   title: {
