@@ -18,7 +18,7 @@ export const createPartsRegistration = async (name, description) => {
       name: name,
       description: description,
     };
-
+    console.log('part params', params);
     const response = await fetchApi('/parts/create', {
       method: 'POST',
       body: JSON.stringify(params),

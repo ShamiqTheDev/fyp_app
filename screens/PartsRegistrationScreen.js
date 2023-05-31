@@ -1,6 +1,4 @@
-/* eslint-disable no-shadow */
-/* eslint-disable no-catch-shadow */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 
@@ -13,49 +11,73 @@ const PartsRegistrationScreen = ({navigation}) => {
   const [activeVehicle, setActiveVehicle] = useState({});
   const [error, setError] = useState('');
 
-  const handleRegistrationBase = async navigateTo => {
-    try {
-      const response = await createPartsRegistration(name, description);
-      if (response.status === true) {
-        setName('');
-        setDescription('');
-        navigation.navigate(navigateTo);
-        console.log('Navifation to MyVehicleParts');
+  const handleRegistrationBase = useCallback(
+    async (navigateTo, group = '', vehicle = '') => {
+      try {
+        const response = await createPartsRegistration(name, description);
+        if (response.status === true) {
+          setName('');
+          setDescription('');
+          if (group && vehicle) {
+            navigation.navigate(group, {
+              screen: navigateTo,
+              params: {vehicle},
+            });
+          } else if (group) {
+            navigation.navigate(group, {
+              screen: 'AllPartsByVehicle',
+            });
+          } else {
+            navigation.navigate(navigateTo);
+          }
+        }
+        // Handle the response here
+        console.log(response);
+      } catch (error) {
+        // Handle the error or validation errors here
+        setError(error.message);
+        console.log(error);
       }
-      // Handle the response here
-      console.log(response);
-    } catch (error) {
-      // Handle the error or validation errors here
-      console.log(error);
-    }
-  };
+    },
+    [name, description, navigation],
+  );
 
-  const handleRegistration = async vehicle => {
-    navigation.navigate('InternalRoutes', {
-      screen: 'AllPartsByVehicle',
-      params: {vehicle},
-    });
-  };
+  // const handleRegistration = useCallback(
+  //   vehicle => {
+  //     navigation.navigate('InternalRoutes', {
+  //       screen: 'AllPartsByVehicle',
+  //       params: {vehicle},
+  //     });
+  //   },
+  //   [navigation],
+  // );
+  const handleRegistration = useCallback(
+    vehicle => {
+      handleRegistrationBase('AllPartsByVehicle', 'InternalRoutes', vehicle);
+    },
+    [handleRegistrationBase],
+  );
 
-  const handleMoreRegistration = () => {
+  const handleMoreRegistration = useCallback(() => {
     handleRegistrationBase('PartsRegistration');
-  };
+  }, [handleRegistrationBase]);
 
-  // const handleExpiries = (vehicle, part) => {
-  //   navigation.navigate('InternalRoutes', {
-  //     screen: 'AddExpiry',
-  //     params: {vehicle, part},
-  //   });
-  //   navigation.navigate('AddExpiry');
-  // };
-  const getActiveVehicle = async () => {
+  const getActiveVehicle = useCallback(async () => {
     const activeVehicle = await AsyncStorage.getItem('active_vehicle');
+    setActiveVehicle(JSON.parse(activeVehicle) || {});
+  }, []);
 
-    setActiveVehicle(JSON.parse(activeVehicle));
-  };
   useEffect(() => {
     getActiveVehicle();
-  });
+  }, [getActiveVehicle]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getActiveVehicle();
+    });
+
+    return unsubscribe;
+  }, [navigation, getActiveVehicle]);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -89,13 +111,6 @@ const PartsRegistrationScreen = ({navigation}) => {
         style={styles.button}>
         Register Part!
       </Button>
-      {/* <Button
-        mode="outlined"
-        onPress={handleExpiries}
-        textColor="#7f1416"
-        style={styles.buttonExpiry}>
-        Add Expiries Now?
-      </Button> */}
       {error !== '' && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
@@ -118,10 +133,6 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 16,
   },
-  // buttonExpiry: {
-  //   marginTop: 16,
-  //   borderColor: '#7f1416',
-  // },
   errorText: {
     color: 'red',
     marginTop: 16,

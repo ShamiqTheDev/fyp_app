@@ -84,9 +84,13 @@ const DashboardScreen = ({navigation}) => {
   useEffect(() => {
     const loadTotalKilometers = async () => {
       try {
-        const value = await AsyncStorage.getItem('total_kilometers');
-        if (value !== null) {
-          setTotalKilometers(parseFloat(value));
+        const totalKilometersVal = await AsyncStorage.getItem(
+          'total_kilometers',
+        );
+        if (totalKilometersVal !== null) {
+          setTotalKilometers(parseFloat(totalKilometersVal));
+        } else {
+          setTotalKilometers(0);
         }
       } catch (error) {
         console.log('Error loading total kilometers from AsyncStorage:', error);

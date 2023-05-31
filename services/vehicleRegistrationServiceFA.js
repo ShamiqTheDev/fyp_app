@@ -70,15 +70,21 @@ export const deleteVehicleRegistration = async id => {
   }
 };
 
-export const fetchVehicleRegistrations = async () => {
+export const fetchVehicleRegistrationsByUserId = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
-    const response = await fetchApi('/vehicleRegistrations/getAll', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json', // Add the JSON response header
+    const userData = await AsyncStorage.getItem('user');
+    const userId = JSON.parse(userData).id;
+
+    const response = await fetchApi(
+      `/vehicleRegistrations/getAllByUserId/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json', // Add the JSON response header
+        },
       },
-    });
+    );
 
     return response;
   } catch (error) {

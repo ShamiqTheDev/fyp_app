@@ -5,7 +5,6 @@ import {
   DefaultTheme,
   Provider as PaperProvider,
   Button,
-  MD2Colors,
 } from 'react-native-paper';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';

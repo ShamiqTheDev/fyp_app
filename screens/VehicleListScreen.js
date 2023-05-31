@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {View, StyleSheet, Text, ScrollView} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {Card, Button, TextInput, Title} from 'react-native-paper';
@@ -6,115 +6,151 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createVehicleRegistration,
   deleteVehicleRegistration,
+  fetchVehicleRegistrationsByUserId,
 } from '../services/vehicleRegistrationServiceFA';
 
 const VehicleListScreen = ({navigation}) => {
   const [vehicleRegistrations, setVehicleRegistrations] = useState([]);
-  // const [userId, setUserId] = useState(null);
-  // const [showCreateForm, setShowCreateForm] = useState(false);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-
   const [activeVehicleId, setActiveVehicleId] = useState(null);
 
   const isFocused = useIsFocused();
 
+  // const fetchVehicleRegistrations = useCallback(async () => {
+  //   try {
+  //     const registrations = await AsyncStorage.getItem('vehicle_registrations');
+  //     const parsedRegistrations = JSON.parse(registrations) || {};
+  //     setVehicleRegistrations(parsedRegistrations);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   fetchVehicleRegistrations();
+  // }, [isFocused, fetchVehicleRegistrations]);
+
   useEffect(() => {
-    // Fetch vehicle registrations from AsyncStorage
-    const fetchVehicleRegistrations = async () => {
+    const fetchData = async () => {
       try {
-        const registrations = await AsyncStorage.getItem(
-          'vehicle_registrations',
-        );
-        const parsedRegistrations = JSON.parse(registrations) || [];
-        setVehicleRegistrations(parsedRegistrations);
+        const response = await fetchVehicleRegistrationsByUserId();
+        if (response.status === true) {
+          setVehicleRegistrations(response.data);
+        } else {
+          console.log(response.message);
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
-    if (isFocused) {
-      fetchVehicleRegistrations();
-    }
+    fetchData();
   }, [isFocused]);
 
-  useEffect(() => {
-    // Fetch vehicle registrations from AsyncStorage
-    AsyncStorage.getItem('vehicle_registrations')
-      .then(registrations => {
-        const parsedRegistrations = JSON.parse(registrations);
-        if (parsedRegistrations) {
-          setVehicleRegistrations(parsedRegistrations);
-        }
-      })
-      .catch(error => console.log(error));
-  }, []);
+  // const handleVehicle = useCallback(async () => {
+  //   try {
+  //     const response = await createVehicleRegistration(name, number);
+  //     if (response.status === true) {
+  //       const updatedRegistrations = [...vehicleRegistrations, response.data];
+  //       setVehicleRegistrations(updatedRegistrations);
+  //       await AsyncStorage.multiSet([
+  //         ['vehicle_registrations', JSON.stringify(updatedRegistrations)],
+  //         ['active_vehicle', JSON.stringify(response.data)],
+  //         ['total_kilometers', response.data.distance],
+  //       ]);
+  //       navigation.navigate('Dashboard');
+  //     } else {
+  //       console.log(response);
+  //     }
+  //     setName('');
+  //     setNumber('');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, [name, number, vehicleRegistrations, navigation]);
 
-  const handleVehicle = async () => {
+  const handleVehicle = useCallback(async () => {
     try {
       const response = await createVehicleRegistration(name, number);
       if (response.status === true) {
-        // Update vehicleRegistrations state and AsyncStorage
-        const updatedRegistrations = [...vehicleRegistrations, response.data];
-        setVehicleRegistrations(updatedRegistrations);
-        AsyncStorage.setItem(
-          'vehicle_registrations',
-          JSON.stringify(updatedRegistrations),
-        );
-        handleVehicleParts(response.data);
-        // setShowCreateForm(false);
-        setName('');
-        setNumber('');
+        setVehicleRegistrations([...vehicleRegistrations, response.data]);
+        await AsyncStorage.multiSet([
+          ['active_vehicle', JSON.stringify(response.data)],
+          ['total_kilometers', response.data.distance],
+        ]);
+        navigation.navigate('Dashboard');
       } else {
         console.log(response);
       }
+      setName('');
+      setNumber('');
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [name, number, vehicleRegistrations, navigation]);
 
-  const handleEdit = vehicle => {
-    navigation.navigate('InternalRoutes', {
-      screen: 'EditVehicle',
-      params: {vehicle},
-    });
-  };
+  const handleEdit = useCallback(
+    vehicle => {
+      navigation.navigate('InternalRoutes', {
+        screen: 'EditVehicle',
+        params: {vehicle},
+      });
+    },
+    [navigation],
+  );
 
-  const handleDelete = async vehicle => {
-    // Show confirmation dialog or prompt to confirm deletion
+  // const handleDelete = useCallback(async vehicle => {
+  //   try {
+  //     const response = await deleteVehicleRegistration(vehicle.id);
+  //     if (response.status === true) {
+  //       const [registrations, activeVehicle] = await AsyncStorage.multiGet([
+  //         'vehicle_registrations',
+  //         'active_vehicle',
+  //       ]);
+  //       const parsedRegistrations = JSON.parse(registrations) || {};
+  //       const updatedRegistrations = parsedRegistrations.filter(
+  //         registration => registration.id !== vehicle.id,
+  //       );
+  //       await AsyncStorage.multiSet([
+  //         ['vehicle_registrations', JSON.stringify(updatedRegistrations)],
+  //         ['active_vehicle', activeVehicle],
+  //       ]);
+  //       console.log(updatedRegistrations);
+  //       setVehicleRegistrations(updatedRegistrations); // Update the state here
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, []);
 
-    try {
-      const response = await deleteVehicleRegistration(vehicle.id);
-      if (response.status === true) {
-        // Delete the vehicle registration from AsyncStorage
-        const vehicleRegistrationsDel = await AsyncStorage.getItem(
-          'vehicle_registrations',
-        );
-        const parsedRegistrations = JSON.parse(vehicleRegistrationsDel) || [];
-        const updatedRegistrations = parsedRegistrations.filter(
-          registration => registration.id !== vehicle.id,
-        );
-        await AsyncStorage.setItem(
-          'vehicle_registrations',
-          JSON.stringify(updatedRegistrations),
-        );
-
-        // Update the vehicleRegistrations state
-        setVehicleRegistrations(updatedRegistrations);
+  const handleDelete = useCallback(
+    async vehicle => {
+      try {
+        const response = await deleteVehicleRegistration(vehicle.id);
+        if (response.status === true) {
+          const updatedRegistrations = vehicleRegistrations.filter(
+            registration => registration.id !== vehicle.id,
+          );
+          setVehicleRegistrations(updatedRegistrations); // Update the state here
+          await AsyncStorage.setItem(
+            'vehicle_registrations',
+            JSON.stringify(updatedRegistrations),
+          );
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    },
+    [vehicleRegistrations],
+  );
 
   useEffect(() => {
-    // Retrieve the active_vehicle from async storage
     const getActiveVehicleId = async () => {
       try {
-        let vehicle = await AsyncStorage.getItem('active_vehicle');
+        const vehicle = await AsyncStorage.getItem('active_vehicle');
         if (vehicle !== null) {
-          vehicle = JSON.parse(vehicle);
-          setActiveVehicleId(vehicle.id.toString());
+          setActiveVehicleId(JSON.parse(vehicle).id.toString());
         }
       } catch (error) {
         console.log('Error retrieving active_vehicle:', error);
@@ -123,46 +159,72 @@ const VehicleListScreen = ({navigation}) => {
     getActiveVehicleId();
   }, []);
 
-  const handleUseNow = async vehicle => {
-    try {
-      // Update the active_vehicle in async storage
-      await AsyncStorage.setItem('active_vehicle', JSON.stringify(vehicle));
-      await AsyncStorage.setItem('total_kilometers', vehicle.distance);
-      setActiveVehicleId(vehicle.id.toString());
+  // const handleUseNow = useCallback(
+  //   async vehicle => {
+  //     try {
+  //       await AsyncStorage.multiSet([
+  //         ['active_vehicle', JSON.stringify(vehicle)],
+  //         ['total_kilometers', vehicle.distance],
+  //       ]);
+  //       setActiveVehicleId(vehicle.id.toString());
+  //       navigation.navigate('Dashboard');
+  //     } catch (error) {
+  //       console.log('Error updating active_vehicle:', error);
+  //     }
+  //   },
+  //   [navigation],
+  // );
 
-      navigation.navigate('Dashboard');
-    } catch (error) {
-      console.log('Error updating active_vehicle:', error);
-    }
-  };
-
-  const handleVehicleParts = async vehicle => {
-    try {
-      // Update the active_vehicle_id in async storage
-      await AsyncStorage.setItem('active_vehicle', JSON.stringify(vehicle));
-      if (vehicle) {
+  const handleUseNow = useCallback(
+    async vehicle => {
+      try {
+        if (vehicle.distance !== undefined) {
+          console.log(vehicle);
+          await AsyncStorage.multiSet([
+            ['active_vehicle', JSON.stringify(vehicle)],
+            ['total_kilometers', vehicle.distance],
+          ]);
+        } else {
+          await AsyncStorage.setItem('active_vehicle', JSON.stringify(vehicle));
+        }
         setActiveVehicleId(vehicle.id.toString());
+        navigation.navigate('Dashboard');
+      } catch (error) {
+        console.log('Error updating active_vehicle:', error);
       }
+    },
+    [navigation],
+  );
 
-      navigation.navigate('PartsRegistration');
-    } catch (error) {
-      console.log('Error updating active_vehicle:', error);
-    }
-  };
+  const handleVehicleParts = useCallback(
+    async vehicle => {
+      try {
+        await AsyncStorage.setItem('active_vehicle', JSON.stringify(vehicle));
+        setActiveVehicleId(vehicle.id.toString());
+        navigation.navigate('PartsRegistration');
+      } catch (error) {
+        console.log('Error updating active_vehicle:', error);
+      }
+    },
+    [navigation],
+  );
 
-  const handleCardClick = vehicle => {
-    navigation.navigate('InternalRoutes', {
-      screen: 'AllPartsByVehicle',
-      params: {vehicle},
-    });
-  };
+  const handleCardClick = useCallback(
+    vehicle => {
+      navigation.navigate('InternalRoutes', {
+        screen: 'AllPartsByVehicle',
+        params: {vehicle},
+      });
+    },
+    [navigation],
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {vehicleRegistrations.length > 0 && (
         <View style={styles.listContainer}>
           <Text style={styles.heading}>Vehicle List</Text>
-          {vehicleRegistrations.map((vehicle, index) => (
+          {vehicleRegistrations.map(vehicle => (
             <Card
               key={vehicle.id}
               style={styles.card}
@@ -170,9 +232,6 @@ const VehicleListScreen = ({navigation}) => {
               <Card.Content>
                 <Title>Name: {vehicle.name}</Title>
                 <Text>Number: {vehicle.number}</Text>
-                {/* <Text>
-                  Distance: {vehicle.distance ? vehicle.distance : 0} km
-                </Text> */}
               </Card.Content>
               <Card.Actions>
                 {vehicle.id.toString() === activeVehicleId ? (

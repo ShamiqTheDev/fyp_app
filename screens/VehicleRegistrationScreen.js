@@ -33,10 +33,12 @@ const VehicleRegistrationScreen = ({navigation}) => {
         );
         const parsedRegistrations = JSON.parse(vehicleRegistrations) || [];
         const updatedRegistrations = [...parsedRegistrations, response.data];
-        await AsyncStorage.setItem(
-          'vehicle_registrations',
-          JSON.stringify(updatedRegistrations),
-        );
+
+        console.log('SET active_vehicle', response.data);
+        await AsyncStorage.multiSet([
+          ['active_vehicle', JSON.stringify(response.data)],
+          ['vehicle_registrations', JSON.stringify(updatedRegistrations)],
+        ]);
 
         // Navigate to the "MyVehicle" screen
         navigation.navigate(navigateTo);
