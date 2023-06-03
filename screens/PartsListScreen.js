@@ -76,20 +76,20 @@ const PartsListScreen = ({navigation, route}) => {
       return (
         <Card key={item.id} style={styles.card}>
           <Card.Content>
-            <Title>Name: {item.name}</Title>
+            <Title style={styles.cardText}>Name: {item.name}</Title>
             {item.expiry ? (
               <>
-                <Text>
+                <Text style={styles.cardText}>
                   Distance Covered:{' '}
                   {item.expiry.distance
                     ? item.expiry.distance + 'KMs'
                     : 0 + 'km'}
                 </Text>
-                <Text>
+                <Text style={styles.cardText}>
                   Part Expiry:{' '}
                   {item.expiry.expiry ? item.expiry.expiry + 'KMs' : 0 + 'km'}
                 </Text>
-                <Text>
+                <Text style={styles.cardText}>
                   Notification will arrive before{' '}
                   {item.expiry.notify_at
                     ? item.expiry.notify_at + 'KMs'
@@ -97,7 +97,7 @@ const PartsListScreen = ({navigation, route}) => {
                 </Text>
               </>
             ) : (
-              <Text>Description: {item.description}</Text>
+              <Text style={styles.cardText}>Description: {item.description}</Text>
             )}
           </Card.Content>
           <Card.Actions>
@@ -140,11 +140,11 @@ const PartsListScreen = ({navigation, route}) => {
           <Text style={styles.heading}>{vehicle.name} Parts List</Text>
           <Card style={styles.cardNotFound}>
             <Card.Content>
-              <Title>No Parts Found!</Title>
-              <Text>
+              <Title style={styles.cardText}>No Parts Found!</Title>
+              <Text style={styles.cardText}>
                 Are you expecting parts here for your vehicle {vehicle.name}?
               </Text>
-              <Text>Add parts Now!</Text>
+              <Text style={styles.cardText}>Add parts Now!</Text>
             </Card.Content>
             <Card.Actions>
               <Button onPress={handleAddPartsNow}>Add Parts Now!</Button>
@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     marginBottom: 14,
     paddingLeft: 7,
+    color: 'black',
   },
   title: {
     fontSize: 24,
@@ -186,6 +187,9 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
+  },
+  cardText: {
+    color: 'black',
   },
   cardNotFound: {
     marginBottom: 16,

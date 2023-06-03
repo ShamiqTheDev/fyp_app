@@ -230,8 +230,8 @@ const VehicleListScreen = ({navigation}) => {
               style={styles.card}
               onPress={() => handleCardClick(vehicle)}>
               <Card.Content>
-                <Title>Name: {vehicle.name}</Title>
-                <Text>Number: {vehicle.number}</Text>
+                <Title style={styles.cardText}>Name: {vehicle.name}</Title>
+                <Text style={styles.cardText}>Number: {vehicle.number}</Text>
               </Card.Content>
               <Card.Actions>
                 {vehicle.id.toString() === activeVehicleId ? (
@@ -307,6 +307,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    color: 'black',
   },
   title: {
     fontSize: 24,
@@ -316,6 +317,9 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
+  },
+  cardText: {
+    color: 'black',
   },
   input: {
     width: '100%',
