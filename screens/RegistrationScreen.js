@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
+    color: 'black',
   },
   input: {
     marginBottom: 16,
@@ -148,6 +149,7 @@ const styles = StyleSheet.create({
   loginText: {
     marginTop: 16,
     textAlign: 'center',
+    color: 'black',
   },
   loginLink: {
     color: 'blue',

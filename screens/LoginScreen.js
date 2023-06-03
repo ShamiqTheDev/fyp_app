@@ -121,6 +121,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    textAlign: 'center',
+    color: 'black',
   },
   input: {
     marginBottom: 16,
@@ -131,6 +133,7 @@ const styles = StyleSheet.create({
   signupText: {
     marginTop: 16,
     textAlign: 'center',
+    color: 'black',
   },
   signupLink: {
     color: 'blue',
