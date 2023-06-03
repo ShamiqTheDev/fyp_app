@@ -99,7 +99,7 @@ const App = () => {
         name="Dashboard"
         component={DashboardScreen}
         options={{
-          title: 'Dashboard',
+          title: 'Active Vehicle Tracking',
           headerLeft: null,
           headerRight: () => <Button onPress={handleLogout} title="Logout" />,
         }}

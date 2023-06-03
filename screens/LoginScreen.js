@@ -24,15 +24,21 @@ const LoginScreen = () => {
       const response = await loginUser(email, password);
       if (response.status === true) {
         const fcm_token = await messaging().getToken();
+        const token = response.token;
         console.log('FCM Token:', fcm_token);
+        console.log('LogedIn', response.data);
 
-        await AsyncStorage.setItem('fcm_token', fcm_token);
-        await AsyncStorage.setItem('token', response.token);
-        await AsyncStorage.setItem('user', JSON.stringify(response.data));
-        await AsyncStorage.setItem(
-          'vehicle_registrations',
-          JSON.stringify(response.data.vehicle_registrations),
-        );
+
+        await AsyncStorage.multiSet([
+          ['token', token],
+          ['fcm_token', fcm_token],
+          ['user', JSON.stringify(response.data)],
+          [
+            'vehicle_registrations',
+            JSON.stringify(response.data.vehicle_registrations),
+          ],
+          ['total_kilometers', response.data.vehicle_registrations[0].distance],
+        ]);
 
         navigation.replace('AuthenticatedRoutes');
 
