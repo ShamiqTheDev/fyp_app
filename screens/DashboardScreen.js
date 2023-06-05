@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useCallback} from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import {View, Text, StyleSheet, Alert} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -11,7 +12,9 @@ const DashboardScreen = ({navigation}) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [previousLocation, setPreviousLocation] = useState(null);
   const [totalKilometers, setTotalKilometers] = useState(0);
+  const isFocused = useIsFocused();
 
+  // handling notifications
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       const {data} = remoteMessage;
@@ -33,6 +36,7 @@ const DashboardScreen = ({navigation}) => {
     return unsubscribe;
   }, []);
 
+  // notification permission
   useEffect(() => {
     // Request permission for notifications
     messaging()
@@ -66,6 +70,7 @@ const DashboardScreen = ({navigation}) => {
     return unsubscribe; // Clean up the subscription when component unmounts
   }, []);
 
+  // location handling
   useEffect(() => {
     const watchId = Geolocation.watchPosition(
       position => {
@@ -81,12 +86,14 @@ const DashboardScreen = ({navigation}) => {
     };
   }, []);
 
+  // managing kilometres
   useEffect(() => {
     const loadTotalKilometers = async () => {
       try {
         const totalKilometersVal = await AsyncStorage.getItem(
           'total_kilometers',
         );
+        console.log(totalKilometersVal);
         if (totalKilometersVal !== null) {
           setTotalKilometers(parseFloat(totalKilometersVal));
         } else {
