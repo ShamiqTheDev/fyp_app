@@ -12,7 +12,6 @@ import {
 const PartsListScreen = ({navigation, route}) => {
   const {vehicle} = route.params;
   const [parts, setParts] = useState([]);
-  const activeVehicleId = '123'; // Replace with your active vehicle ID logic
 
   const isFocused = useIsFocused();
 

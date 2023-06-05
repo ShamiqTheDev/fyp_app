@@ -37,6 +37,10 @@ const LoginScreen = () => {
             'vehicle_registrations',
             JSON.stringify(response.data.vehicle_registrations),
           ],
+          [
+            'active_vehicle',
+            JSON.stringify(response.data.vehicle_registrations[0]),
+          ],
           ['total_kilometers', response.data.vehicle_registrations[0].distance],
         ]);
 
