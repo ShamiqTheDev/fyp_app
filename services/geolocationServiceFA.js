@@ -26,7 +26,7 @@ export const updateGeolocation = async (distance, latitude, longitude) => {
       },
     );
 
-    console.log('Geolocation data updated:', response);
+    // console.log('Geolocation data updated:', response);
   } catch (error) {
     console.log('Error updating geolocation:', error);
   }

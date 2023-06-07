@@ -12,6 +12,7 @@ import {
 const PartsListScreen = ({navigation, route}) => {
   const {vehicle} = route.params;
   const [parts, setParts] = useState([]);
+  const [activeVehicleId, setActiveVehicleId] = useState(0);
 
   const isFocused = useIsFocused();
 
@@ -96,7 +97,9 @@ const PartsListScreen = ({navigation, route}) => {
                 </Text>
               </>
             ) : (
-              <Text style={styles.cardText}>Description: {item.description}</Text>
+              <Text style={styles.cardText}>
+                Description: {item.description}
+              </Text>
             )}
           </Card.Content>
           <Card.Actions>
@@ -123,7 +126,7 @@ const PartsListScreen = ({navigation, route}) => {
   );
 
   return (
-    <View style={{height:'96%'}}>
+    <View style={{height: '96%'}}>
       {parts.length > 0 ? (
         <View style={styles.listContainer}>
           <Text style={styles.heading}>{vehicle.name} Parts List</Text>

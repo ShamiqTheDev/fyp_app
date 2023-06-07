@@ -8,7 +8,11 @@ import {updateGeolocation} from '../services/geolocationServiceFA';
 
 import messaging from '@react-native-firebase/messaging';
 
-const DashboardScreen = ({navigation}) => {
+const DashboardScreen = ({navigation, route}) => {
+  // const {vehicle} = route.params;
+
+  // const vhicleDistance = parseFloat(vehicle.distance);
+  // console.log('Yo vehicle', vhicleDistance);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [previousLocation, setPreviousLocation] = useState(null);
   const [totalKilometers, setTotalKilometers] = useState(0);
@@ -16,6 +20,7 @@ const DashboardScreen = ({navigation}) => {
 
   // handling notifications
   useEffect(() => {
+    console.log('handling notifications');
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       const {data} = remoteMessage;
       const {screen} = data;
@@ -34,10 +39,11 @@ const DashboardScreen = ({navigation}) => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [navigation]);
 
   // notification permission
   useEffect(() => {
+    console.log('handling notification permission');
     // Request permission for notifications
     messaging()
       .requestPermission()
@@ -72,6 +78,7 @@ const DashboardScreen = ({navigation}) => {
 
   // location handling
   useEffect(() => {
+    console.log('location handling');
     const watchId = Geolocation.watchPosition(
       position => {
         const {latitude, longitude, speed} = position.coords;
@@ -88,12 +95,13 @@ const DashboardScreen = ({navigation}) => {
 
   // managing kilometres
   useEffect(() => {
+    console.log('managing kilometres');
     const loadTotalKilometers = async () => {
       try {
         const totalKilometersVal = await AsyncStorage.getItem(
           'total_kilometers',
         );
-        console.log(totalKilometersVal);
+        console.log('totalKilometersVal', totalKilometersVal);
         if (totalKilometersVal !== null) {
           setTotalKilometers(parseFloat(totalKilometersVal));
         } else {
@@ -146,7 +154,7 @@ const DashboardScreen = ({navigation}) => {
     if (currentLocation) {
       setPreviousLocation(currentLocation);
     }
-  }, [currentLocation, previousLocation, calculateDistance]);
+  }, [isFocused, currentLocation, previousLocation, calculateDistance]);
 
   const calculateDistance = useCallback((lat1, lon1, lat2, lon2) => {
     const R = 6371; // Radius of the Earth in kilometers

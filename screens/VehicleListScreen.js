@@ -182,13 +182,20 @@ const VehicleListScreen = ({navigation}) => {
           console.log(vehicle);
           await AsyncStorage.multiSet([
             ['active_vehicle', JSON.stringify(vehicle)],
-            ['total_kilometers', vehicle.distance],
+            ['total_kilometers', vehicle.distance.toString()],
           ]);
+          // console.log('vehicle.distance', vehicle.distance);
+          // console.log(
+          //   'total_kilometers',
+          //   await AsyncStorage.getItem('total_kilometers'),
+          // );
         } else {
           await AsyncStorage.setItem('active_vehicle', JSON.stringify(vehicle));
         }
         setActiveVehicleId(vehicle.id.toString());
-        navigation.navigate('Dashboard');
+        navigation.navigate('Dashboard', {
+          vehicle: vehicle,
+        });
       } catch (error) {
         console.log('Error updating active_vehicle:', error);
       }
