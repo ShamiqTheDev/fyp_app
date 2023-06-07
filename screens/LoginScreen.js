@@ -28,7 +28,6 @@ const LoginScreen = () => {
         console.log('FCM Token:', fcm_token);
         console.log('LogedIn', response.data);
 
-
         await AsyncStorage.multiSet([
           ['token', token],
           ['fcm_token', fcm_token],
