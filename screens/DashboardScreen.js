@@ -5,6 +5,7 @@ import MapView, {Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {updateGeolocation} from '../services/geolocationServiceFA';
+import {status, counter, reset} from '../services/fetchFromArduinoServer';
 
 import messaging from '@react-native-firebase/messaging';
 
@@ -87,10 +88,12 @@ const DashboardScreen = ({navigation, route}) => {
       error => console.log('Error:', error),
       {enableHighAccuracy: true, distanceFilter: 10, interval: 5000},
     );
+    // console.log(counter());
 
     return () => {
       Geolocation.clearWatch(watchId);
     };
+
   }, []);
 
   // managing kilometres
