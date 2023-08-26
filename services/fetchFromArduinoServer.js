@@ -43,9 +43,24 @@ export const counter = async () => {
 
 export const reset = async () => {
   try {
-    const response = await fetchFromArduino('/reset');
+    // const response = await fetchFromArduino('/reset');
+    const response = '___________counter_has_been_reset___________';
     console.log("fetchFromArduino('/reset')::", response);
     return response;
+  } catch (error) {
+    console.error('Fetch request failed:', error);
+    throw error;
+  }
+};
+
+export const distanceMetres = async () => {
+  try {
+    const totalPulsesInMetre = 998;
+    const pulses = await counter();
+    // const pulses = 1200000;
+    const totalMetres = pulses / totalPulsesInMetre;
+    // console.log('-------totalMetres', totalMetres);
+    return totalMetres;
   } catch (error) {
     console.error('Fetch request failed:', error);
     throw error;

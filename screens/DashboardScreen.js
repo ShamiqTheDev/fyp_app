@@ -5,7 +5,7 @@ import MapView, {Marker} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {updateGeolocation} from '../services/geolocationServiceFA';
-import {status, counter, reset} from '../services/fetchFromArduinoServer';
+import {distanceMetres, reset} from '../services/fetchFromArduinoServer';
 
 import messaging from '@react-native-firebase/messaging';
 
@@ -44,7 +44,7 @@ const DashboardScreen = ({navigation, route}) => {
 
   // notification permission
   useEffect(() => {
-    console.log('handling notification permission');
+    // console.log('handling notification permission');
     // Request permission for notifications
     messaging()
       .requestPermission()
@@ -53,7 +53,7 @@ const DashboardScreen = ({navigation, route}) => {
         messaging()
           .getToken()
           .then(token => {
-            console.log('FCM Token:', token);
+            // console.log('FCM Token:', token);
           });
       })
       .catch(error => {
@@ -88,12 +88,10 @@ const DashboardScreen = ({navigation, route}) => {
       error => console.log('Error:', error),
       {enableHighAccuracy: true, distanceFilter: 10, interval: 5000},
     );
-    // console.log(counter());
 
     return () => {
       Geolocation.clearWatch(watchId);
     };
-
   }, []);
 
   // managing kilometres
@@ -118,39 +116,43 @@ const DashboardScreen = ({navigation, route}) => {
     loadTotalKilometers();
 
     if (currentLocation && previousLocation) {
-      const distance = calculateDistance(
-        previousLocation.latitude,
-        previousLocation.longitude,
-        currentLocation.latitude,
-        currentLocation.longitude,
-      );
-      const kilometers = distance / 1000; // Convert distance from meters to kilometers
+      // const distance = calculateDistance(
+      //   previousLocation.latitude,
+      //   previousLocation.longitude,
+      //   currentLocation.latitude,
+      //   currentLocation.longitude,
+      // );
+      distanceMetres().then(distance => {
+        // console.log('--------+distance', distance);
+        const kilometers = distance / 1000; // Convert distance from meters to kilometers
+        // console.log('+++++kilometers', kilometers);
+        setTotalKilometers(prevKilometers => {
+          const newKilometers = prevKilometers + kilometers;
 
-      setTotalKilometers(prevKilometers => {
-        const newKilometers = prevKilometers + kilometers;
+          AsyncStorage.setItem('total_kilometers', newKilometers.toString());
 
-        AsyncStorage.setItem('total_kilometers', newKilometers.toString());
+          if (newKilometers >= 5 && Math.floor(newKilometers) % 5 === 0) {
+            updateGeolocation(
+              newKilometers,
+              currentLocation.latitude,
+              currentLocation.longitude,
+            )
+              .then(response => {
+                if (response && response.status) {
+                  console.log('Success: Syncing location data');
+                  reset();
+                }
+              })
+              .catch(error => {
+                console.log('Error: Syncing location data');
+                console.log(error);
+              });
 
-        if (newKilometers >= 5 && Math.floor(newKilometers) % 5 === 0) {
-          updateGeolocation(
-            newKilometers,
-            currentLocation.latitude,
-            currentLocation.longitude,
-          )
-            .then(response => {
-              if (response && response.status) {
-                console.log('Success: Syncing location data');
-              }
-            })
-            .catch(error => {
-              console.log('Error: Syncing location data');
-              console.log(error);
-            });
+            console.log('Updating data in the database...');
+          }
 
-          console.log('Updating data in the database...');
-        }
-
-        return newKilometers;
+          return newKilometers;
+        });
       });
     }
 
